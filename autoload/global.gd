@@ -12,6 +12,8 @@ var animationTick = 0
 
 var filtering = false
 
+var truncating = true
+
 #Object Selection
 var heldSprite = null
 var lastArray = []
@@ -47,6 +49,9 @@ signal stopSpeaking
 var micResetTime = 180
 
 var updatePusherNode = null
+
+#Checking if an avatar is being dragged around
+var dragging = false
 
 var rand = RandomNumberGenerator.new()
 

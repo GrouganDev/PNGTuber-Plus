@@ -242,3 +242,7 @@ func _on_delete_9_pressed():
 func _on_delete_10_pressed():
 	var label = $CostumeInputs/ScrollContainer/VBoxContainer/costumeButton10/Label
 	deleteKey(label,10)
+
+
+func _on_truncate_check_toggled(button_pressed: bool) -> void:
+	Global.truncating = button_pressed

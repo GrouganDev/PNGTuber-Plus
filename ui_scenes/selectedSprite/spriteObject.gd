@@ -42,6 +42,7 @@ var z = 0
 #Movement
 var heldTicks = 0
 var dragSpeed = 0
+var originalDragSpeed = 0
 
 
 #Origin
@@ -78,6 +79,12 @@ var remadePolygon = false
 var clipped = false
 
 var tick = 0
+
+#NEW Animation Settings
+var randomizeAnim = false
+var randomizeSpeed = false
+var minRandSpeed = 1
+var maxRandSpeed = 1
 
 #Vis toggle
 var toggle = "null"
@@ -223,13 +230,18 @@ func _process(delta):
 		grabArea.visible = false
 		originSprite.visible = false
 	
+	if Global.dragging:
+		dragSpeed = 0
+	else:
+		dragSpeed = originalDragSpeed
+	
 	var glob = dragger.global_position
 	if ignoreBounce:
 		glob.y -= Global.main.bounceChange
-	
+		
 	drag(delta)
 	wobble()
-	
+		
 	var length = (glob.y - dragger.global_position.y)
 	
 	rotationalDrag(length,delta)
@@ -250,7 +262,14 @@ func animation():
 			if sprite.frame == frames - 1:
 				sprite.frame = 0
 			else:
-				sprite.frame += 1
+				if randomizeAnim:
+					sprite.frame = Global.rand.randi_range(0, frames - 1)
+				else:
+					sprite.frame += 1
+					
+			if randomizeSpeed:
+				animSpeed = Global.rand.randi_range(minRandSpeed, maxRandSpeed)
+				
 	if frames > 1:
 		remakePolygon()
 
@@ -339,6 +358,9 @@ func rotationalDrag(length,delta):
 func stretch(length,delta):
 	var yvel = (length * stretchAmount * 0.01)
 	var target = Vector2(1.0-yvel,1.0+yvel)
+	
+	if Global.dragging:
+		return
 	
 	sprite.scale = lerp(sprite.scale,target,0.5)
 

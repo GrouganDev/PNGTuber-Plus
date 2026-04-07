@@ -151,6 +151,22 @@ func _process(delta):
 	fileSystemOpen = isFileSystemOpen()
 	
 	followShadow()
+	
+	
+
+func _unhandled_input(event: InputEvent) -> void:
+	if Input.is_action_pressed("middle_wheel"):
+		Input.set_default_cursor_shape(Input.CURSOR_MOVE)
+		
+		if event is InputEventMouseMotion:
+			Global.dragging = true
+			origin.position += event.screen_relative
+		else:
+			Global.dragging = false
+			
+	else:
+		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+		Global.dragging = false
 
 func followShadow():
 	shadow.visible = is_instance_valid(Global.heldSprite)
@@ -318,6 +334,7 @@ func _on_load_dialog_file_selected(path):
 		sprite.offset = str_to_var(data[item]["offset"])
 		sprite.z = data[item]["zindex"]
 		sprite.dragSpeed = data[item]["drag"]
+		sprite.originalDragSpeed = data[item]["drag"]
 		
 		sprite.xFrq = data[item]["xFrq"]
 		sprite.xAmp = data[item]["xAmp"]
@@ -356,6 +373,16 @@ func _on_load_dialog_file_selected(path):
 			sprite.clipped = data[item]["clipped"]
 		if data[item].has("toggle"):
 			sprite.toggle = data[item]["toggle"]
+		
+		if data[item].has("randomizeAnim"):
+			sprite.randomizeAnim = data[item]["randomizeAnim"]
+		if data[item].has("randomizeSpeed"):
+			sprite.randomizeSpeed = data[item]["randomizeSpeed"]
+		
+		if data[item].has("minRandSpeed"):
+			sprite.minRandSpeed = data[item]["minRandSpeed"]
+		if data[item].has("maxRandSpeed"):
+			sprite.maxRandSpeed = data[item]["maxRandSpeed"]
 		
 		origin.add_child(sprite)
 		sprite.position = str_to_var(data[item]["pos"])
@@ -414,6 +441,12 @@ func _on_save_dialog_file_selected(path):
 			data[id]["clipped"] = child.clipped
 			
 			data[id]["toggle"] = child.toggle
+			
+			data[id]["randomizeAnim"] = child.randomizeAnim
+			data[id]["randomizeSpeed"] = child.randomizeSpeed
+			
+			data[id]["minRandSpeed"] = child.minRandSpeed
+			data[id]["maxRandSpeed"] = child.maxRandSpeed
 			
 		id += 1
 	

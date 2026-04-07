@@ -10,6 +10,8 @@ extends Node2D
 
 @onready var coverCollider = $Area2D/CollisionShape2D
 
+@onready var extraAnimCollider = $Area2D/AnimBoxCollisionShape2D
+
 
 func _ready():
 	Global.spriteEdit = self
@@ -69,6 +71,15 @@ func setImage():
 	
 	$VisToggle/setToggle/Label.text = "toggle: \"" + Global.heldSprite.toggle +  "\""
 	
+	$ExtraAnimationOptions/Sliders/RandomSpeedMax.text = "random speed max: " + str(Global.heldSprite.maxRandSpeed)
+	$ExtraAnimationOptions/Sliders/RandomSpeedMin.text = "random speed min: " + str(Global.heldSprite.minRandSpeed)
+	$ExtraAnimationOptions/Sliders/SpeedMaxSlider.editable = Global.heldSprite.randomizeSpeed
+	$ExtraAnimationOptions/Sliders/SpeedMinSlider.editable = Global.heldSprite.randomizeSpeed
+	
+	$ExtraAnimationOptions/Buttons/RandomizeAnimation.button_pressed = Global.heldSprite.randomizeAnim
+	$ExtraAnimationOptions/Buttons/RandomizeSpeed.button_pressed = Global.heldSprite.randomizeSpeed
+	
+	
 	changeRotLimit()
 	
 	setLayerButtons()
@@ -93,6 +104,7 @@ func _process(delta):
 
 	visible = Global.heldSprite != null
 	coverCollider.disabled = !visible
+	extraAnimCollider.disabled = !$ExtraAnimationOptions.visible
 	
 	if !visible:
 		return
@@ -118,6 +130,7 @@ func _on_drag_slider_value_changed(value):
 	if Global.heldSprite != null:
 		$Slider/Label.text = "drag: " + str(value)
 		Global.heldSprite.dragSpeed = value
+		Global.heldSprite.originalDragSpeed = value
 
 
 func _on_x_frq_value_changed(value):
@@ -354,3 +367,28 @@ func _on_set_toggle_pressed():
 	var key = keys[0]
 	Global.heldSprite.toggle = key
 	$VisToggle/setToggle/Label.text = "toggle: \"" + Global.heldSprite.toggle +  "\""
+
+
+func _on_extra_anim_options_toggled(button_pressed: bool) -> void:
+	$ExtraAnimationOptions.visible = button_pressed
+
+
+func _on_speed_min_slider_value_changed(value: float) -> void:
+	Global.heldSprite.minRandSpeed = value
+	$ExtraAnimationOptions/Sliders/RandomSpeedMin.text = "random speed min: " + str(value)
+
+
+func _on_speed_max_slider_value_changed(value: float) -> void:
+	Global.heldSprite.maxRandSpeed = value
+	$ExtraAnimationOptions/Sliders/RandomSpeedMax.text = "random speed max: " + str(value)
+
+
+func _on_randomize_animation_toggled(toggled_on: bool) -> void:
+	Global.heldSprite.randomizeAnim = toggled_on
+
+
+func _on_randomize_speed_toggled(toggled_on: bool) -> void:
+	Global.heldSprite.randomizeSpeed = toggled_on
+	
+	$ExtraAnimationOptions/Sliders/SpeedMinSlider.editable = toggled_on
+	$ExtraAnimationOptions/Sliders/SpeedMaxSlider.editable = toggled_on
