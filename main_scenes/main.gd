@@ -435,12 +435,15 @@ func iterateAudioEvents(sprite, map, type):
 		if newRow != null:
 			
 			if typeof(map[frame][1]) == TYPE_STRING:
-				var newAssignment = [null, [map[frame][1], 0]]
+				var newAssignment = [null, [map[frame][1], 0, null]]
 				map[frame] = newAssignment
 			
+			if len(map[frame][1]) == 2:
+				map[frame][1].append(null)
+
 			newRow.eventType = type
 			Global.menuItemsContainer.add_child(newRow)
-			newRow.setUpAudioEvent(map[frame][1][0], map[frame][1][1])
+			newRow.setUpAudioEvent(map[frame][1][0], map[frame][1][1], map[frame][1][2])
 			map[frame] = newRow.eventData
 			newRow.frameInput.text = str(frame)
 			newRow.frameIndex = frame

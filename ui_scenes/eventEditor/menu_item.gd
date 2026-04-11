@@ -72,7 +72,7 @@ func updateValueLabel():
 			#var fileNames = eventData[1].split("/")
 			var data = null
 			if eventData != null:
-				data = "File: " + str(eventData[1][0]) + "\nVolume: " + str(eventData[1][1])
+				data = "Original File Location: " + str(eventData[1][0]) + "\nVolume: " + str(eventData[1][1])
 			valueLabel.text = "Current Value:\n"+ str(data)
 
 
@@ -153,7 +153,10 @@ func changeEventMapPosition(newFrame, eventMap):
 		eventMap.erase(frameIndex)
 		frameIndex = newFrame
 
-func setUpAudioEvent(path: String, volume: float):
+func setUpAudioEvent(path: String, volume: float, audioData = null):
+	if !FileAccess.file_exists(path) and !audioData:
+		return
+	
 	if eventData != null and is_instance_valid(eventData[0]):
 		eventData[0].queue_free()
 	
@@ -162,18 +165,34 @@ func setUpAudioEvent(path: String, volume: float):
 	var extension = (path.substr(len(path) - 3)).to_lower()
 	match extension:
 		"wav":
-			audioPlayer.stream = AudioStreamWAV.load_from_file(path)
+			if(audioData == null):
+				audioPlayer.stream = AudioStreamWAV.load_from_file(path)
+			else:
+				audioPlayer.stream = AudioStreamWAV.load_from_buffer(Marshalls.base64_to_raw(audioData))
 		"ogg":
-			audioPlayer.stream = AudioStreamOggVorbis.load_from_file(path)
+			if(audioData == null):
+				audioPlayer.stream = AudioStreamOggVorbis.load_from_file(path)
+			else:
+				audioPlayer.stream = AudioStreamOggVorbis.load_from_buffer(Marshalls.base64_to_raw(audioData))
 		"mp3":
-			audioPlayer.stream = AudioStreamMP3.load_from_file(path)
+			if(audioData ==  null):
+				audioPlayer.stream = AudioStreamMP3.load_from_file(path)
+			else:
+				audioPlayer.stream = AudioStreamMP3.load_from_buffer(Marshalls.base64_to_raw(audioData))
+		
 	audioPlayer.volume_db = volume
 	audioPlayer.pitch_scale = 1
 	audioPlayer.bus = "Master"
 	
+	if FileAccess.file_exists(path):
+		var file = FileAccess.open(path, FileAccess.READ)
+		audioData = Marshalls.raw_to_base64(file.get_buffer(file.get_length()))
+	
 	Global.main.add_child(audioPlayer)
 	
-	eventData = [audioPlayer, [path, audioPlayer.volume_db]]
+	
+	eventData = [audioPlayer, [path, audioPlayer.volume_db, audioData]]
+	#print(eventData[1][2])
 	
 	if frameInput.text != "":
 		assignedSprite.soundToggles[frameIndex] = eventData
