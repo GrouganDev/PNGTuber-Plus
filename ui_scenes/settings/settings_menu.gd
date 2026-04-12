@@ -246,3 +246,11 @@ func _on_delete_10_pressed():
 
 func _on_truncate_check_toggled(button_pressed: bool) -> void:
 	Global.truncating = button_pressed
+
+
+func _on_reset_mic_check_toggled(button_pressed: bool) -> void:
+	Global.resetMicOnCostumeChange = button_pressed
+
+
+func _on_status_updates_check_toggled(button_pressed: bool) -> void:
+	Global.updatesEnabled = button_pressed

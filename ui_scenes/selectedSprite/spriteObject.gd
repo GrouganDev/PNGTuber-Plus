@@ -303,31 +303,20 @@ func animation():
 		
 
 func checkEvents():
-	#Make sure microphone is enabled whenever there are no events to change it
-	#if microphoneToggles.size() == 0:
-		#Global.micEnabled = true
-	#eventChecked = true
-	
-	
 	if !grabArea.monitorable:
 		return
 
 	var frame = str(sprite.frame + 1)
-	#Toggle Microphone
-	#print(soundToggles)
 	if microphoneToggles.has(frame) and microphoneToggles[frame] != null:
-		Global.micEnabled = microphoneToggles[frame]
-		#print(Global.micEnabled)
+		Global.toggleMicrophone(microphoneToggles[frame])
 		
 	
 	#Play Sound
 	if soundToggles.has(frame) and soundToggles[frame] != null:
-		#print("test")
 		soundToggles[frame][0].play()
 	
 	#Change Costume
 	if costumeChanges.has(frame):
-		#print("change costume to " + str(costumeChanges[frame]))
 		Global.main.changeCostume((int)(costumeChanges[frame]))
 	
 	

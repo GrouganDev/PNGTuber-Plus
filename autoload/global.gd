@@ -24,6 +24,10 @@ var filtering = false
 
 var truncating = true
 
+var resetMicOnCostumeChange = false
+
+var updatesEnabled = true
+
 #Object Selection
 var heldSprite = null
 var lastArray = []
@@ -131,6 +135,9 @@ func _process(delta):
 		else:
 			emit_signal("stopSpeaking")
 	
+	if Input.is_action_just_pressed("micToggle"):
+		toggleMicrophone(!micEnabled)
+	
 	if main != null and heldSprite != null:
 		if Input.is_action_just_pressed("zDown"):
 			heldSprite.z -= 1
@@ -220,6 +227,15 @@ func select(areas):
 	lastArray = areas.duplicate()
 	
 	spriteEdit.setImage()
+
+func toggleMicrophone(enabled: bool):
+	micEnabled = enabled
+	var state
+	if micEnabled:
+		state = "Enabled."
+	else:
+		state = "Disabled."
+	Global.pushUpdate("Microphone " + state)
 
 func linkSprite(sprite,newParent):
 	if sprite == newParent:
@@ -383,5 +399,5 @@ func saveImagesFromData():
 	pushUpdate("Saved all avatar images to computer.")
 	
 func pushUpdate(text):
-	if is_instance_valid(updatePusherNode):
+	if is_instance_valid(updatePusherNode) and updatesEnabled:
 		updatePusherNode.pushUpdate(text)
